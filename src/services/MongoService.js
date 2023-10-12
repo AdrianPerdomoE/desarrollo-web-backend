@@ -43,6 +43,20 @@ class MongoService extends IDatabase {
 
   async findOne(collectionName, id) {
     const _id = new ObjectId(id);
+    const client = getClient();
+    try {
+      await client.connect();
+      const dbName = config.get("database.name");
+      const database = client.db(dbName);
+      const collection = database.collection(collectionName);
+      /// Ejecutar comandos
+      const row = await collection.findOne();
+      return row;
+    } catch (error) {
+      console.error(error);
+    } finally {
+      await client.close();
+    }
   }
 }
 
